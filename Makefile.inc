@@ -1,0 +1,1 @@
+APPL_COBJS += D_ColorSensor.o D_GyroSensor.o D_Motor.o D_SonarSensor.o D_TouchSensor.o Calibrator.o Prep_Arm.o Linetracer.o Light_Lightdetector.o LPF_LPF.o Driver.o PID_PID.o BasicRun.o Rcourse.o Sumo_Action.o Color_Comparison.o Train_Timer.o Gray_detection.o AI_answer.o BasicRun_L.o Lcourse.o LgameCalc.o Dijk.o LgameMove.o EdgeChanger.o 
