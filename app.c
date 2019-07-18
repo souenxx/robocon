@@ -81,7 +81,7 @@ int state = 0;
 int time1 =0;
 int base_count =103; //環境次第,事前に調べる
 int target_count = 0;
-int R_course = 0;  //1:Rコース0:Lコース
+int R_course = 1;  //1:Rコース0:Lコース
 
 int analog_num;
 int degital_num;
@@ -180,13 +180,15 @@ void ev3_init(){
 
 /* 初期化タスク*/
 void init_task(intptr_t unused)
-{	char filename[30];
+{	//char filename[30];
 	if(flag==true){
 	ev3_init();
 	 //bt = ev3_serial_open_file(EV3_SERIAL_BT);
 	assert(bt != NULL);
 	//char timestr[30];
-	int filenumber=1;
+
+//	int filenumber=1;
+  /**
 	while(1){
 		sprintf(filename,"Linetrace_%d.csv",filenumber);
 		if ((testfile = fopen(filename, "r")) == NULL) {
@@ -200,7 +202,8 @@ void init_task(intptr_t unused)
 			printf("file open error!!\n");
 			ext_tsk();
 	}
-	fprintf(logging,"Time,Battery,LMoter,RMoter,AMoter,TMoter,Gyro,Touch,Reflect,Red,Green,Blue,Sonar,Data1,Data2,tiradius,light_level,distance\n");
+  **/
+	//fprintf(logging,"Time,Battery,LMoter,RMoter,AMoter,TMoter,Gyro,Touch,Reflect,Red,Green,Blue,Sonar,Data1,Data2,tiradius,light_level,distance\n");
 	flag=false;
 	}
 	//ulong_t correnttime;
@@ -210,7 +213,6 @@ void init_task(intptr_t unused)
     //ev3_lcd_fill_rect(0, 0, EV3_LCD_WIDTH, EV3_LCD_HEIGHT, EV3_LCD_WHITE);
     //ev3_lcd_draw_string(filename, 0, CALIB_FONT_HEIGHT*1);
     /* Open Bluetooth file */
-
 //ここが実行されない限りメインタスクはストップする
     set_flg(FLG1,0x01);
     set_flg(FLG2,0x01);
@@ -225,8 +227,8 @@ void init_task(intptr_t unused)
 	 FLGPTN flag;
 
    //白と黒の閾値（0と255は適当）
-   // int threshold_white = 0;
-   // int threshold_black = 255;
+   //int threshold_white = 0;
+   //int threshold_black = 255;
 
    //ここでストップする
 	 wai_flg(FLG1, 0x01, TWF_ANDW, &flag);
@@ -336,15 +338,17 @@ void init_task(intptr_t unused)
        //Rコース
        //急カーブは低速で走る(3000<count<8000にしておけば余裕を持って実現可能),カーブではないところは通常運転
        count_t += 1;
-       if(count_t<2000){
+       if(count_t<4000){
          Linetracer_do(&linetracer, 0, 0);
-       }else if(count_t<5000){
-         Linetracer_do(&linetracer, 0, 1);
+       }else if(count_t<8000){
+         //Linetracer_do(&linetracer, 0, 1);
+         count_t=0;
+         state=1002;
        }else{
          Linetracer_do(&linetracer, 0, 0);
-            if(ColorSensor_getColor(&colorsensor)==5){//赤を検知したら
+            if(ColorSensor_getColor(&colorsensor)==2){//青を検知したら
               count_t=0;
-              state=1000;//Rコース競技内へ
+              state=1002;//とりあえずモーター停止
             }
         }
       }else{
@@ -671,7 +675,7 @@ void sd_logging_task(intptr_t unused)
 //ここでストップする
 	wai_flg(FLG2, 0x01, TWF_ANDW, &flag);
 	ulong_t correnttime = getTime();
-if(loggingflag==true){
+if(loggingflag==false){
     int battery = ev3_battery_voltage_mV();
     int lpower = Motor_getPower(&left_motor);
     int rpower = Motor_getPower(&right_motor);
