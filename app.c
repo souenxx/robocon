@@ -81,7 +81,7 @@ int state = 0;
 int time1 =0;
 int base_count =103; //環境次第,事前に調べる
 int target_count = 0;
-int R_course = 1;  //1:Rコース0:Lコース
+int R_course = 0;  //1:Rコース0:Lコース
 
 int analog_num;
 int degital_num;
@@ -333,27 +333,43 @@ void init_task(intptr_t unused)
      //左側ライントレース
      sprintf(lcdstr, "state 5");
      ev3_lcd_draw_string(lcdstr,0,0);   //EV3の画面に表示
-     //0:Lコース1:Rコース
+     //R_cource=1で固定
      if(R_course){
        //Rコース
-       //急カーブは低速で走る(3000<count<8000にしておけば余裕を持って実現可能),カーブではないところは通常運転
+       //count_t=9000;
        count_t += 1;
-       if(count_t<4000){
-         Linetracer_do(&linetracer, 0, 0);
+       if(count_t<1000){
+         Linetracer_do(&linetracer, 1, 0);
        }else if(count_t<8000){
          //Linetracer_do(&linetracer, 0, 1);
-         count_t=0;
-         state=1002;
+         Linetracer_do(&linetracer, 1, 1);
        }else{
-         Linetracer_do(&linetracer, 0, 0);
-            if(ColorSensor_getColor(&colorsensor)==2){//青を検知したら
-              count_t=0;
-              state=1002;//とりあえずモーター停止
-            }
+         Linetracer_do(&linetracer, 1, 0);//通常速度
+         //Linetracer_do(&linetracer, 0, 1);//低速、カーブが無理ならこっちで
+         //int f=ColorSensor_getColor(&colorsensor);
+         //if(f==2){//1回目の青検知
+          //count_t=0;
+          //state=1002;//1回目の青を読み込み、とりあえず停止
+         //}
         }
       }else{
-        //Lコース
+        count_t += 1;
+        if(count_t<1500){
+          Linetracer_do(&linetracer, 0, 0);
+        }else if(count_t<4000){
+          Linetracer_do(&linetracer, 0, 1);
+        }else if(count_t<9000){
+          Linetracer_do(&linetracer, 0, 0);//通常速度
+          //Linetracer_do(&linetracer, 0, 1);//低速、カーブが無理ならこっちで
+             //if(ColorSensor_getColor(&colorsensor)==2){//1回目の青検知
+               //count_t=0;
+               //state=1002;//1回目の青を読み込み、とりあえず停止
+             //}
+         }
+        //昨年のLコース
         //通常運転のみでok
+
+        /*
         Linetracer_do(&linetracer, 0, 0);
         // if(ColorSensor_getColor(&colorsensor)==3){//緑を検知したら
         int normal_light;
@@ -364,6 +380,7 @@ void init_task(intptr_t unused)
         if (rgb_score.r < 30 && rgb_score.g >= 46 && rgb_score.b >= 46) {
           state = 6;
         }
+        */
         //if(normal_light <= 8 && normal_light >= 5) {
           // green_count++;
           // if(green_count >= 40) {
