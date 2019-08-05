@@ -347,10 +347,10 @@ void init_task(intptr_t unused)
          Linetracer_do(&linetracer, 1, 0);//通常速度
          //Linetracer_do(&linetracer, 0, 1);//低速、カーブが無理ならこっちで
          //int f=ColorSensor_getColor(&colorsensor);
-         //if(f==2){//1回目の青検知
-          //count_t=0;
-          //state=1002;//1回目の青を読み込み、とりあえず停止
-         //}
+         if(Gray_detection_do(&gray_detection)){//1回目の青検知
+          count_t=0;
+          state=1002;//1回目の青を読み込み、とりあえず停止
+         }
         }
       }else{
         count_t += 1;
@@ -358,7 +358,7 @@ void init_task(intptr_t unused)
           Linetracer_do(&linetracer, 0, 0);
         }else if(count_t<4000){
           Linetracer_do(&linetracer, 0, 1);
-        }else if(count_t<9000){
+        }else{
           Linetracer_do(&linetracer, 0, 0);//通常速度
           //Linetracer_do(&linetracer, 0, 1);//低速、カーブが無理ならこっちで
              //if(ColorSensor_getColor(&colorsensor)==2){//1回目の青検知
