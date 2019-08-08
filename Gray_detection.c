@@ -21,12 +21,13 @@ void Gray_detection_init(Gray_detection* this, ColorSensor* colorsensor){
 
 //灰色検知パターン1（輝度値を用いて40以下が40以上カウントされれば灰色検知）
 int Gray_detection_do(Gray_detection* this){
-  this -> Color = ColorSensor_getReflectBrightness(this -> colorsensor);
+  this -> Color = ColorSensor_getColor(this -> colorsensor);
+  //int f=ColorSensor_getColor(&colorsensor)
   if(this -> count > 40){
     return 1;
   }
   else{
-    if(this -> Color > 40){
+    if(this -> Color == 2){
       this -> count++;
     }
     else{

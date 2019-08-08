@@ -310,7 +310,7 @@ void init_task(intptr_t unused)
 
       //試験用に分岐可能,通常はstate=5
   		if (TouchSensor_getState(&touchsensor)== true){
-  			state = 5;//ライントレース
+  			state = 14;//ライントレース
         // state = 1ß111; //便利ツール
         // state = 11;//駐車
         //state = 25;//ライン復帰テスト用
@@ -338,9 +338,9 @@ void init_task(intptr_t unused)
        //Rコース
        //count_t=9000;
        count_t += 1;
-       if(count_t<1000){
+       if(count_t<1500){
          Linetracer_do(&linetracer, 1, 0);
-       }else if(count_t<8000){
+       }else if(count_t<4000){
          //Linetracer_do(&linetracer, 0, 1);
          Linetracer_do(&linetracer, 1, 1);
        }else{
@@ -515,18 +515,18 @@ void init_task(intptr_t unused)
    else if(state ==14){
      //まず直進
      if(l_state==0){
-       if(BasicRun_GoStraight(&basicRun , 0)==1){
+       if(BasicRun_GoStraight(&basicRun , 10)==1){
          l_state = 1;
        }
      //弧を描いて駐車スペースへ
-     }else if(l_state==1){
-       if(BasicRun_Tama(&basicRun , 70)==1){
-         l_state=2;
+   }else if(l_state==2){
+       if(BasicRun_Tama(&basicRun , 100)==1){
+         l_state=3;
        }
      //最後に角度の調整
-     }else if(l_state==2){
-       if(BasicRun_Curve(&basicRun,-50)==1){
-         l_state=3;
+   }else if(l_state==1){
+       if(BasicRun_Curve(&basicRun,80)==1){
+         l_state=2;
        }
      //モーターストップ
      }else if(l_state==3){
@@ -537,13 +537,16 @@ void init_task(intptr_t unused)
    //Lコース駐車
    else if(state == 15){
      //駐車スペースに向かって直進
-     if(BasicRun_GoStraight(&basicRun , 20)==1){
+     if(BasicRun_GoStraight(&basicRun , 50)==1){
        state = 16;
      }
    }
-
-   //モーターストップ
    else if(state==16){
+     if(BasicRun_Curve(&basicRun,-85)==1){
+       state=17;
+     }
+   }
+   else if(state==17){
      Motor_stop(&left_motor,true);
      Motor_stop(&right_motor,true);
    }
