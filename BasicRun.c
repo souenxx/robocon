@@ -230,3 +230,44 @@ int BasicRun_Tama(BasicRun* this, int cm){
   return 0;
 
 }
+int BasicRun_Kido(BasicRun* this, int cm){
+  switch(this->state){
+    //今の回転角度を取得
+    case 0:
+      Motor_stop(this->leftMotor,true);
+      Motor_stop(this->rightMotor,true);
+      this->initangle = Motor_getAngle(this->rightMotor);
+      this->state = 1;
+      break;
+    //直進
+    case 1:
+      if(cm > 0){
+        Motor_setPower(this->rightMotor, (this->Speed));
+        Motor_setPower(this->leftMotor, (this->Speed)*2/3);
+      }else{
+        Motor_setPower(this->rightMotor, -1*(this->Speed));
+        Motor_setPower(this->leftMotor, -1*(this->Speed)*1/3);
+      }
+      //指定距離まで進んだら
+      float tmp = abs(Motor_getAngle(this->rightMotor) - this->initangle);
+      if( tmp*this->delta >= abs(cm)  ){
+        this->state = 2;
+      }
+      break;
+    case 2://停止
+      Motor_stop(this->leftMotor,true);
+      Motor_stop(this->rightMotor,true);
+      if(Motor_getPower(this->rightMotor) == 0){
+        this->state = 3;
+      }
+      break;
+    case 3:
+      BasicRun_reset(this);
+      return 1;
+      break;
+    default:
+      break;
+  }
+  return 0;
+
+}
