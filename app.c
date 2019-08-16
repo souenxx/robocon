@@ -310,7 +310,7 @@ void init_task(intptr_t unused)
 
       //試験用に分岐可能,通常はstate=5
   		if (TouchSensor_getState(&touchsensor)== true){
-  			state = 14;//ライントレース
+  			state = 13;//ライントレース
         // state = 1ß111; //便利ツール
         // state = 11;//駐車
         //state = 25;//ライン復帰テスト用
@@ -365,6 +365,11 @@ void init_task(intptr_t unused)
                //count_t=0;
                //state=1002;//1回目の青を読み込み、とりあえず停止
              //}
+          //if(Gray_detection_do(&gray_detection)){//1回目の青検知
+          if(ColorSensor_getColor(&colorsensor)==4){
+            count_t=0;
+            state=1002;//1回目の青を読み込み、とりあえず停止
+          }
          }
         //昨年のLコース
         //通常運転のみでok
@@ -497,19 +502,16 @@ void init_task(intptr_t unused)
    else if(state==13){
      //駐車Part3
      //各コース毎の駐車ムーブ
-     Motor_setPower(&left_motor,10);
-     Motor_setPower(&right_motor,10);
-     if(ColorSensor_getReflectBrightness(&colorsensor)>Calibrator_get_white(&calibrator)-5){
-       //0:Lコース1:Rコース
-       if(R_course){
+     //Motor_setPower(&left_motor,10);
+     //Motor_setPower(&right_motor,10);
+    if(R_course){
          //Rコース駐車
-         state =14;
-       }else{
+      state =14;
+    }else{
          //Lコース駐車
-         state = 15;//L駐車
-       }
-     }
-   }
+      state = 15;//L駐車
+    }
+  }
 
    //Rコース駐車
    else if(state ==14){
@@ -519,18 +521,23 @@ void init_task(intptr_t unused)
          l_state = 1;
        }
      //弧を描いて駐車スペースへ
-   }else if(l_state==2){
-       if(BasicRun_Tama(&basicRun , 100)==1){
-         l_state=3;
-       }
-     //最後に角度の調整
    }else if(l_state==1){
-       if(BasicRun_Curve(&basicRun,80)==1){
+       if(BasicRun_Curve(&basicRun,90)==1){
          l_state=2;
        }
+   }else if(l_state==2){
+       if(BasicRun_Kido(&basicRun,95)==1){
+         l_state=3;
+       }
+   }else if(l_state==3){
+       if(BasicRun_GoStraight(&basicRun,15)==1){
+         l_state=4;
+       }
+
+     //最後に角度の調整
      //モーターストップ
-     }else if(l_state==3){
-       state=16;
+   }else if(l_state==4){
+       state=17;
      }
    }
 
@@ -550,7 +557,33 @@ void init_task(intptr_t unused)
      Motor_stop(&left_motor,true);
      Motor_stop(&right_motor,true);
    }
+   //Rコース駐車
+   else if(state ==20){
+     //まず直進
+     if(l_state==0){
+       if(BasicRun_GoStraight(&basicRun , 10)==1){
+         l_state = 1;
+       }
+     //弧を描いて駐車スペースへ
+   }else if(l_state==1){
+       if(BasicRun_Curve(&basicRun,90)==1){
+         l_state=2;
+       }
+   }else if(l_state==2){
+       if(BasicRun_Kido(&basicRun,95)==1){
+         l_state=3;
+       }
+   }else if(l_state==3){
+       if(BasicRun_GoStraight(&basicRun,15)==1){
+         l_state=4;
+       }
 
+     //最後に角度の調整
+     //モーターストップ
+   }else if(l_state==4){
+       state=17;
+     }
+   }
 
 
 //---------------------------試験用プログラム-------------------------

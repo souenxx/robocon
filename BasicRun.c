@@ -243,7 +243,7 @@ int BasicRun_Kido(BasicRun* this, int cm){
     case 1:
       if(cm > 0){
         Motor_setPower(this->rightMotor, (this->Speed));
-        Motor_setPower(this->leftMotor, (this->Speed)*2/3);
+        Motor_setPower(this->leftMotor, (this->Speed)*1/2);
       }else{
         Motor_setPower(this->rightMotor, -1*(this->Speed));
         Motor_setPower(this->leftMotor, -1*(this->Speed)*1/3);

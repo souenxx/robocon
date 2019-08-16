@@ -54,6 +54,6 @@ int BasicRun_pivot(BasicRun* this, int angle, int rightPivot);
 int BasicRun_Curve(BasicRun* this, int angle);
 int BasicRun_GoStraight(BasicRun* this, int cm);
 int BasicRun_Tama(BasicRun* this, int cm);
-
+int BasicRun_Kido(BasicRun* this, int cm);
 
 #endif
