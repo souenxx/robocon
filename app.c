@@ -566,12 +566,13 @@ void init_task(intptr_t unused)
        }
      //弧を描いて駐車スペースへ
    }else if(l_state==1){
-       if(BasicRun_Curve(&basicRun,90)==1){
+       if(BasicRun_Curve(&basicRun,30)==1){
          l_state=2;
        }
    }else if(l_state==2){
-       if(BasicRun_Kido(&basicRun,95)==1){
-         l_state=3;
+       if(BasicRun_GoStraight(&basicRun,100)==1){
+         if(ColorSensor_getColor==){
+         l_state=3;}
        }
    }else if(l_state==3){
        if(BasicRun_GoStraight(&basicRun,15)==1){
