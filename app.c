@@ -349,7 +349,7 @@ void init_task(intptr_t unused)
          //int f=ColorSensor_getColor(&colorsensor);
          if(Gray_detection_do(&gray_detection)){//1回目の青検知
           count_t=0;
-          state=1002;//1回目の青を読み込み、とりあえず停止
+          state=998;//1回目の青を読み込み、とりあえず停止
          }
         }
       }else{
@@ -365,14 +365,63 @@ void init_task(intptr_t unused)
                //count_t=0;
                //state=1002;//1回目の青を読み込み、とりあえず停止
              //}
-          //if(Gray_detection_do(&gray_detection)){//1回目の青検知
-          if(ColorSensor_getColor(&colorsensor)==4){
+          if(Gray_detection_do(&gray_detection)){//1回目の青検知
+          //if(ColorSensor_getColor(&colorsensor)==4){
             count_t=0;
-            state=1002;//1回目の青を読み込み、とりあえず停止
+            state=998;//1回目の青を読み込み、とりあえず停止
           }
          }
         //昨年のLコース
         //通常運転のみでok
+        else if(state==998){
+          //左側ライントレース
+          sprintf(lcdstr, "state 998");
+          ev3_lcd_draw_string(lcdstr,0,0);   //EV3の画面に表示
+          //R_cource=1で固定
+          if(R_course){
+            //Rコース
+            //count_t=9000;
+            count_t += 1;
+            if(count_t<200){
+              Linetracer_do(&linetracer, 1, 0);
+            }else{
+              Linetracer_do(&linetracer, 1, 0);//通常速度
+              if(Gray_detection_do(&gray_detection)){//2回目の青検知
+               state=999;//2回目の青を読み込み、とりあえず停止
+              }
+             }
+           }else{
+             count_t += 1;
+             if(count_t<200){
+               Linetracer_do(&linetracer, 0, 0);
+             }else{
+               Linetracer_do(&linetracer, 0, 0);//通常速度
+               //Linetracer_do(&linetracer, 0, 1);//低速、カーブが無理ならこっちで
+               if(Gray_detection_do(&gray_detection)){
+                 state=999;//2回目の青を読み込み、とりあえず停止
+               }
+              }
+            }
+
+            else if(state==999){
+              //左側ライントレース
+              sprintf(lcdstr, "state 999");
+              ev3_lcd_draw_string(lcdstr,0,0);   //EV3の画面に表示
+              if(R_course){
+                //Rコース
+                //count_t += 1;
+                  Linetracer_do(&linetracer, 1, 1);
+                  if(ColorSensor_getColor(&colorsensor)==4){
+                    state=1002;//黄色を読み込み、ビンゴプログラムに切り替え
+                  }
+               }else{
+                //Lコース
+                  Linetracer_do(&linetracer, 0, 1);
+                  if(ColorSensor_getColor(&colorsensor)==4){
+                    state=1002;
+                  }
+                }
+              }
 
         /*
         Linetracer_do(&linetracer, 0, 0);
