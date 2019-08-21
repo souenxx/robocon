@@ -371,26 +371,27 @@ void init_task(intptr_t unused)
             state=998;//1回目の青を読み込み、とりあえず停止
           }
          }
+       }
         //昨年のLコース
         //通常運転のみでok
-        else if(state==998){
+   }else if(state==998){
           //左側ライントレース
-          sprintf(lcdstr, "state 998");
-          ev3_lcd_draw_string(lcdstr,0,0);   //EV3の画面に表示
-          //R_cource=1で固定
-          if(R_course){
-            //Rコース
-            //count_t=9000;
-            count_t += 1;
-            if(count_t<200){
-              Linetracer_do(&linetracer, 1, 0);
-            }else{
-              Linetracer_do(&linetracer, 1, 0);//通常速度
-              if(Gray_detection_do(&gray_detection)){//2回目の青検知
-               state=999;//2回目の青を読み込み、とりあえず停止
-              }
-             }
-           }else{
+        sprintf(lcdstr, "state 998");
+        ev3_lcd_draw_string(lcdstr,0,0);   //EV3の画面に表示
+        //R_cource=1で固定
+        if(R_course){
+          //Rコース
+          //count_t=9000;
+          count_t += 1;
+          if(count_t<200){
+            Linetracer_do(&linetracer, 1, 0);
+          }else{
+            Linetracer_do(&linetracer, 1, 0);//通常速度
+            if(Gray_detection_do(&gray_detection)){//2回目の青検知
+              state=999;//2回目の青を読み込み、とりあえず停止
+            }
+          }
+        }else{
              count_t += 1;
              if(count_t<200){
                Linetracer_do(&linetracer, 0, 0);
@@ -401,25 +402,24 @@ void init_task(intptr_t unused)
                  state=999;//2回目の青を読み込み、とりあえず停止
                }
               }
-            }
+        }
 
-            else if(state==999){
-              //左側ライントレース
-              sprintf(lcdstr, "state 999");
-              ev3_lcd_draw_string(lcdstr,0,0);   //EV3の画面に表示
-              if(R_course){
-                //Rコース
-                //count_t += 1;
-                  Linetracer_do(&linetracer, 1, 1);
-                  if(ColorSensor_getColor(&colorsensor)==4){
-                    state=1002;//黄色を読み込み、ビンゴプログラムに切り替え
-                  }
-               }else{
-                //Lコース
-                  Linetracer_do(&linetracer, 0, 1);
-                  if(ColorSensor_getColor(&colorsensor)==4){
-                    state=1002;
-                  }
+   }else if(state==999){
+            //左側ライントレース
+            sprintf(lcdstr, "state 999");
+            ev3_lcd_draw_string(lcdstr,0,0);   //EV3の画面に表示
+            if(R_course){
+            //Rコース
+            //count_t += 1;
+                Linetracer_do(&linetracer, 1, 1);
+                if(ColorSensor_getColor(&colorsensor)==4){
+                  state=1002;//黄色を読み込み、ビンゴプログラムに切り替え
+                }
+            }else{
+            //Lコース
+                Linetracer_do(&linetracer, 0, 1);
+                if(ColorSensor_getColor(&colorsensor)==4){
+                  state=1002;
                 }
               }
 
@@ -445,11 +445,11 @@ void init_task(intptr_t unused)
         // } else {
         //   green_count = 0;
         // }
-      }
-      // 27 48 52
-   }
 
-   else if(state==1000){
+      // 27 48 52
+
+
+   }else if(state==1000){
      if(Lcourse_task(&lcourse) == 1){
        state = 1001;
      }
@@ -605,34 +605,6 @@ void init_task(intptr_t unused)
    else if(state==17){
      Motor_stop(&left_motor,true);
      Motor_stop(&right_motor,true);
-   }
-   //Rコース駐車
-   else if(state ==20){
-     //まず直進
-     if(l_state==0){
-       if(BasicRun_GoStraight(&basicRun , 10)==1){
-         l_state = 1;
-       }
-     //弧を描いて駐車スペースへ
-   }else if(l_state==1){
-       if(BasicRun_Curve(&basicRun,30)==1){
-         l_state=2;
-       }
-   }else if(l_state==2){
-       if(BasicRun_GoStraight(&basicRun,100)==1){
-         if(ColorSensor_getColor==){
-         l_state=3;}
-       }
-   }else if(l_state==3){
-       if(BasicRun_GoStraight(&basicRun,15)==1){
-         l_state=4;
-       }
-
-     //最後に角度の調整
-     //モーターストップ
-   }else if(l_state==4){
-       state=17;
-     }
    }
 
 
