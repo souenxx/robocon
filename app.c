@@ -414,6 +414,8 @@ void init_task(intptr_t unused)
                 Linetracer_do(&linetracer, 1, 1);
                 if(ColorSensor_getColor(&colorsensor)==4){
                   state=1002;//黄色を読み込み、ビンゴプログラムに切り替え
+                  //state=13;
+                  //駐車プログラム
                 }
             }else{
             //Lコース
@@ -567,6 +569,7 @@ void init_task(intptr_t unused)
      //まず直進
      if(l_state==0){
        if(BasicRun_GoStraight(&basicRun , 10)==1){
+       //if(BasicRun_GoStraight(&basicRun , 100)==1){
          l_state = 1;
        }
      //弧を描いて駐車スペースへ
