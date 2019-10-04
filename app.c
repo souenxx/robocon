@@ -81,7 +81,7 @@ int state = 0;
 int time1 =0;
 int base_count =103; //環境次第,事前に調べる
 int target_count = 0;
-int R_course = 0;  //1:Rコース0:Lコース
+int R_course = 1;  //1:Rコース0:Lコース
 
 int analog_num;
 int degital_num;
@@ -310,7 +310,7 @@ void init_task(intptr_t unused)
 
       //試験用に分岐可能,通常はstate=5
   		if (TouchSensor_getState(&touchsensor)== true){
-  			state = 13;//ライントレース
+  			state = 5;//ライントレース
         // state = 1ß111; //便利ツール
         // state = 11;//駐車
         //state = 25;//ライン復帰テスト用
@@ -338,40 +338,81 @@ void init_task(intptr_t unused)
        //Rコース
        //count_t=9000;
        count_t += 1;
-       if(count_t<1500){
-         Linetracer_do(&linetracer, 1, 0);
-       }else if(count_t<4000){
-         //Linetracer_do(&linetracer, 0, 1);
+       if(count_t<15000){
          Linetracer_do(&linetracer, 1, 1);
+       //}else if(count_t<8000){
+         //Linetracer_do(&linetracer, 0, 1);
+         //Linetracer_do(&linetracer, 1, 1);
+       //}else if(count_t<14000){
+         //Linetracer_do(&linetracer, 1, 0);
        }else{
-         Linetracer_do(&linetracer, 1, 0);//通常速度
+         Linetracer_do(&linetracer, 1, 2);//通常速度
+         if(ColorSensor_getColor(&colorsensor)==4){
+           state=333;
+         }
          //Linetracer_do(&linetracer, 0, 1);//低速、カーブが無理ならこっちで
          //int f=ColorSensor_getColor(&colorsensor);
-         if(Gray_detection_do(&gray_detection)){//1回目の青検知
-          count_t=0;
-          state=998;//1回目の青を読み込み、とりあえず停止
-         }
-        }
+         //if(Gray_detection_do(&gray_detection)){//1回目の青検知
+          //count_t=0;
+          //state=998;//1回目の青を読み込み、とりあえず停止
+
+       }
       }else{
         count_t += 1;
-        if(count_t<1500){
-          Linetracer_do(&linetracer, 0, 0);
-        }else if(count_t<4000){
+        if(count_t<4000){
           Linetracer_do(&linetracer, 0, 1);
+          //if(ColorSensor_getColor(&colorsensor)==4){
+            //state=333;
+
+        }else if(count_t<8000){
+          Linetracer_do(&linetracer, 0, 1);
+        }else if(count_t<14000){
+          Linetracer_do(&linetracer, 0, 0);
+
         }else{
-          Linetracer_do(&linetracer, 0, 0);//通常速度
+          Linetracer_do(&linetracer, 0, 2);//通常速度
+          if(ColorSensor_getColor(&colorsensor)==4){
+            state=333;
+          }
+
           //Linetracer_do(&linetracer, 0, 1);//低速、カーブが無理ならこっちで
              //if(ColorSensor_getColor(&colorsensor)==2){//1回目の青検知
                //count_t=0;
                //state=1002;//1回目の青を読み込み、とりあえず停止
              //}
-          if(Gray_detection_do(&gray_detection)){//1回目の青検知
+          //if(Gray_detection_do(&gray_detection)){//1回目の青検知
           //if(ColorSensor_getColor(&colorsensor)==4){
-            count_t=0;
-            state=998;//1回目の青を読み込み、とりあえず停止
-          }
+            //count_t=0;
+            //state=998;//1回目の青を読み込み、とりあえず停止
+
          }
        }
+
+   }else if(state==333){
+     if(BasicRun_GoStraight(&basicRun,110)==1){
+       state=334;
+     }
+   }else if(state==334){
+     if(BasicRun_Curve(&basicRun , 90)==1){
+     //if(BasicRun_GoStraight(&basicRun , 100)==1){
+       state = 335;
+     }
+   }else if(state==335){
+     if(BasicRun_GoStraight(&basicRun , 20)==1){
+       state=336;
+     }
+   }else if(state==336){
+     if(BasicRun_GoStraight(&basicRun , -20)==1){
+       state=337;
+     }
+   }else if(state==337){
+     if(BasicRun_Curve(&basicRun , -90)==1){
+       state=13;
+     }
+
+
+
+
         //昨年のLコース
         //通常運転のみでok
    }else if(state==998){

@@ -70,7 +70,7 @@ void Driver_calcPower(Driver* this, double pid, int edge, int save){
     	robo_v = 60;
     }
   }else{
-    robo_v = 15;     //駐車時の超低速
+    robo_v = 15;   //駐車時の超低速
   }
 
 
